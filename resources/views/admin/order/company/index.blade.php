@@ -54,7 +54,7 @@
             </svg>
           </span>
           <!--end::Svg Icon-->
-          <input type="text" data-kt-user-table-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search user" />
+          <input type="text" data-kt-user-table-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Company" />
         </div>
         <!--end::Search-->
       </div>
@@ -111,7 +111,7 @@
                     <a href="javascript:void(0)">
                       <div class="symbol-label">
                         @php
-                          $image=$candidate->user->getMedia('profile_image')->first();
+                          $image=$company->user->getMedia('profile_image')->first();
                         @endphp
                         @isset($image)
                           <img src="{{ asset('storage/'.$image->id.'/'.$image->file_name) ?? '' }}" class="w-100" alt="image" />
@@ -123,16 +123,15 @@
                   </div>
     
                   <div class="d-flex flex-column">
-                    <a href="javascript:void(0)" class="text-gray-800 text-hover-primary mb-1">{{ ucwords($candidate->user->name) ?? '' }}</a>
-                    <span>{{ $candidate->user->email ?? '' }}</span>
+                    <a href="javascript:void(0)" class="text-gray-800 text-hover-primary mb-1">{{ ucwords($company->user->name) ?? '' }}</a>
+                    <span>{{ $company->company_name ?? '' }}</span>
                   </div>
                 </td>
                 <td><span class="badge badge-light-primary fw-bold">66 Active Jobs</span></td>
                 <td>
-                    <p>{{ strtoupper($company->org_type) ?? '' }}</p>
-                    <P>{{ Str::ucfirst($company->country) ?? '' }}</P>
+                    <p>{{ strtoupper($company->org_type) ?? '' }} ({{ Str::ucfirst($company->country) ?? '-' }}) <br> {{ Str::limit($company->location, 50, '...') ?? '' }}</p>
                 </td>
-                <td>@datetime($company->establishment_date)</td>
+                <td>{{ $company->establishment_date ?? 'N/A' }}</td>
                 <td>
                     @if ($company->user->account_status)
                         <span class="badge badge-light-success fw-bold">Activated</span>
@@ -159,13 +158,13 @@
                     <div class="menu-item px-3">
                       <a href="{{ route('admin.company.show',$company) }}" class="menu-link form-control px-3">View</a>
                     </div>
-                    {{-- <div class="menu-item px-3">
-                        <form action="{{ route('admin.users.destroy',$user) }}" method="post">
+                    <div class="menu-item px-3">
+                        <form action="{{ route('admin.company.destroy',$company) }}" method="post">
                             @csrf
                             @method('DELETE')
                             <button  class="menu-link form-control px-3 b-0"  type="submit">{{ __('Delete') }}</button>
                         </form>
-                    </div> --}}
+                    </div>
                   </div>
                 </td>
               </tr>

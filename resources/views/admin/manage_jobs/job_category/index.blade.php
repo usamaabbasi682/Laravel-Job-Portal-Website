@@ -5,7 +5,7 @@
   <!--begin::Page title-->
   <div class="page-title d-flex flex-column align-items-start me-3 py-2 py-lg-0 gap-2">
     <!--begin::Title-->
-    <h1 class="d-flex text-dark fw-bold m-0 fs-3">Users</h1>
+    <h1 class="d-flex text-dark fw-bold m-0 fs-3">Job Categories</h1>
     <!--end::Title-->
     <!--begin::Breadcrumb-->
     <ul class="breadcrumb breadcrumb-dot fw-semibold text-gray-600 fs-7">
@@ -13,7 +13,7 @@
       <li class="breadcrumb-item text-gray-600">Dashboard</li>
       <!--end::Item-->
       <!--begin::Item-->
-      <li class="breadcrumb-item text-gray-500">Users</li>
+      <li class="breadcrumb-item text-gray-500">Categories</li>
       <!--end::Item-->
     </ul>
     <!--end::Breadcrumb-->
@@ -54,7 +54,7 @@
             </svg>
           </span>
           <!--end::Svg Icon-->
-          <input type="text" data-kt-user-table-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search user" />
+          <input type="text" data-kt-user-table-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Job Category" />
         </div>
         <!--end::Search-->
       </div>
@@ -68,7 +68,7 @@
         </div>
         <!--end::Group actions-->
 
-        <a href="{{ route('admin.users.create') }}" class="btn btn-primary">
+        <a href="{{ route('admin.jobCategory.create') }}" class="btn btn-primary">
             <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
             <span class="svg-icon svg-icon-2">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -76,7 +76,7 @@
                     <rect x="4.36396" y="11.364" width="16" height="2" rx="1" fill="currentColor"></rect>
                 </svg>
             </span>
-            <!--end::Svg Icon-->Add User
+            <!--end::Svg Icon-->Add Job Category
         </a>
       </div>
       <!--end::Card toolbar-->
@@ -90,12 +90,12 @@
         <thead>
           <!--begin::Table row-->
           <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-            <th class="min-w-20px pe-2">id</th>
-            <th class="min-w-215px">Name / Email</th>
-            <th class="min-w-115px">Role</th>
-            <th class="min-w-115px">Account Status</th>
+            <th class="min-w-20px pe-2">#</th>
+            <th class="min-w-215px">Name</th>
+            <th class="min-w-115px">Icon</th>
+            <th class="min-w-115px">Status</th>
             <th class="min-w-115px">Created At</th>
-            <th class="min-w-115px">Email Status</th>
+            <th class="min-w-115px d-none">Email Status</th>
             <th class="text-end min-w-90px">Actions</th>
           </tr>
           <!--end::Table row-->
@@ -103,46 +103,24 @@
         <!--end::Table head-->
         <!--begin::Table body-->
         <tbody class="text-gray-600 fw-semibold">
-            @forelse ($users as $user)
+            @forelse ($jobCategories as $jobCategory)
             <tr>
                 <td>{{ $loop->iteration ?? '' }}</td>
                 <td class="d-flex align-items-center">
-                  <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
-                    <a href="javascript:void(0)">
-                      <div class="symbol-label">
-                        @php
-                          $image=$user->getMedia('profile_image')->first();
-                        @endphp
-                        @isset($image)
-                          <img src="{{ asset('storage/'.$image->id.'/'.$image->file_name) ?? '' }}" class="w-100" alt="image" />
-                        @else 
-                          <img src="{{ asset('assets/media/avatars/300-6.jpg') }}" alt="Emma Smith" class="w-100" />
-                        @endisset
-                      </div>
-                    </a>
-                  </div>
-    
                   <div class="d-flex flex-column">
-                    <a href="javascript:void(0)" class="text-gray-800 text-hover-primary mb-1">{{ ucwords($user->name) ?? '' }}</a>
-                    <span>{{ $user->email ?? '' }}</span>
+                    <a href="javascript:void(0)" class="text-gray-800 text-hover-primary mb-1">{{ ucwords($jobCategory->name) ?? '' }}</a>
                   </div>
                 </td>
-                <td><span class="badge badge-light-primary text-primary">{{ Str::ucfirst($user->getRoleNames()[0]) ?? '' }}</span></td>
+                <td><i class="{{ $jobCategory->icon ?? '' }} text-primary" style="font-size:30px;"></i></td>
                 <td>
-                  @if ($user->account_status)
+                  @if ($jobCategory->status)
                     <a href="#" class="badge badge-success text-light">Active</a>
                     @else
                     <a href="#" class="badge badge-danger text-light">Deactive</a>
                   @endif
                 </td>
-                <td>@datetime($user->created_at)</td>
-                <td>
-                    @if ($user->email_verified_at != '')
-                        <span class="badge badge-light-success fw-bold">Verified</span>
-                    @else
-                    <span class="badge badge-light-danger fw-bold">Not Verified</span>
-                    @endif
-                </td>
+                <td>@datetime($jobCategory->created_at)</td>
+                <td class="d-none">-</td>
                 <td class="text-end">
                   <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
                     Actions
@@ -157,10 +135,10 @@
                   </a>
                   <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
                     <div class="menu-item px-3">
-                      <a href="{{ route('admin.users.edit',$user) }}" class="menu-link form-control px-3">Edit</a>
+                      <a href="{{ route('admin.jobCategory.edit',$jobCategory) }}" class="menu-link form-control px-3">Edit</a>
                     </div>
                     <div class="menu-item px-3">
-                        <form action="{{ route('admin.users.destroy',$user) }}" method="post">
+                        <form action="{{ route('admin.jobCategory.destroy',$jobCategory) }}" method="post">
                             @csrf
                             @method('DELETE')
                             <button  class="menu-link form-control px-3 b-0"  type="submit">{{ __('Delete') }}</button>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\Candidate;
+namespace App\Http\Requests\Company;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -22,18 +22,15 @@ class CreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'candidate' => ['required'],
+            'employee' => ['required'],
+            'company_name' => ['required','string','max:200'],
             'country' => ['required','string','max:200'],
             'location' => ['required','string','max:200'],
-            'cv' => ['required','mimes:pdf,docx'],
-            'profession' => ['required'],
-            'experience' => ['required'],
-            'job_role' => ['required'],
-            'education' => ['required'],
-            'gender' => ['required'],
-            'website' => ['url'],
-            'dob' => ['required'],
-            'marital_status' => ['required'],
+            'phone' => ['required'],
+            'email' => ['required','email'],
+            'organization' => ['required'],
+            'industry' => ['required'],
+            'website' => ['nullable','url'],
         ];
     }
 }

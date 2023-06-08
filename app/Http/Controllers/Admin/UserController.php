@@ -36,11 +36,11 @@ class UserController extends Controller
      */
     public function store(CreateRequest $request)
     {
-        if ($request->has('verify')){
-            $verified = now();
-        } else {
-            $verified = null;
-        }
+        if ($request->has('verify'))
+        $verified = now();
+         else 
+        $verified = null;
+        
         
         $user = User::create([
             'name' => $request->input('name'),
@@ -50,13 +50,13 @@ class UserController extends Controller
         ]);
         $user->assignRole($request->input('role'));
 
-        if ($request->hasFile('image')) {
-            $user->addMediaFromRequest('image')->toMediaCollection('profile_image');
-        }
+        if ($request->hasFile('image')) 
+        $user->addMediaFromRequest('image')->toMediaCollection('profile_image');
         
-        if ($user) {
-            return to_route('admin.users.index')->with('success','User has been successfully Added');
-        } 
+        
+        if ($user) 
+        return to_route('admin.users.index')->with('success','User has been successfully Added');
+         
         return to_route('admin.users.index')->with('error','Something went wrong!');
     }
 
@@ -87,9 +87,9 @@ class UserController extends Controller
             'email' => $request->input('email'),
         ]);
 
-        if ($request->input('user_selected_role') != $request->input('role')) {
-            $user->syncRoles($request->input('role'));
-        } 
+        if ($request->input('user_selected_role') != $request->input('role')) 
+        $user->syncRoles($request->input('role'));
+         
 
         if ($request->hasFile('image')) {
             $image = $user->getFirstMedia('profile_image');
@@ -99,9 +99,9 @@ class UserController extends Controller
             $user->addMediaFromRequest('image')->toMediaCollection('profile_image');
         }
 
-        if ($user) {
-            return to_route('admin.users.index')->with('success','User has been successfully Updated.');
-        } 
+        if ($user) 
+        return to_route('admin.users.index')->with('success','User has been successfully Updated.');
+         
         return to_route('admin.users.index')->with('error','Something went wrong!');
     }
 

@@ -19,6 +19,7 @@
 		<!--begin::Global Stylesheets Bundle(mandatory for all pages)-->
 		<link href="{{ asset('assets/plugins/global/plugins.bundle.css') }}" rel="stylesheet" type="text/css" />
 		<link href="{{ asset('assets/css/style.bundle.css') }}" rel="stylesheet" type="text/css" />
+		<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css" rel="stylesheet" />
 		<!--end::Global Stylesheets Bundle-->
 	</head>
 	<!--end::Head-->
@@ -10951,7 +10952,8 @@
 		<script src="{{ asset('assets/js/custom/utilities/modals/users-search.js') }}"></script>
 		<script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
 		<script>
-			CKEDITOR.replace('bio'); // We can Pass Both name and id of textarea
+			CKEDITOR.replace('bio');
+			CKEDITOR.replace('vision');
 		</script>
 	
 		<!--end::Custom Javascript-->

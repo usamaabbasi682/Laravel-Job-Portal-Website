@@ -47,6 +47,33 @@
                         {{ csrf_field() }}
                         @method('PUT')
                         <div class="row mt-5">
+                            <div class="col-md-12 border p-4">
+                                <!--begin::Input group-->
+                                <div class="fv-row mb-7">
+                                   <!--begin::Label-->
+                                   <label class="fs-6 fw-semibold form-label mt-3">
+                                      <span class="required">Candidate</span>
+                                      {{-- <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip" title="Enter the contact's name."></i> --}}
+                                   </label>
+                                   <hr class="p-3" />
+                                   <!--end::Label-->
+                                   <!--begin::Input-->
+                                   <select name="candidate" aria-label="Select a Timezone" data-control="select2" data-placeholder="Select Candidate" class="form-select form-select-solid">
+                                      <option value=""></option>
+                                      @forelse ($candidates as $candidate_group)
+                                        <option data-kt-flag="flags/united-states.svg" @selected($candidate_group->id == $candidate->user_id) value="{{ $candidate_group->id ?? '' }}">{{ ucwords($candidate_group->name) ?? '' }}</option>
+                                      @empty @endforelse
+                                   </select>
+                                   @error('candidate')
+                                   <span class="text-danger">
+                                      <strong>{{ $message }}</strong>
+                                   </span>
+                                   @enderror
+                                   <!--end::Input-->
+                                </div>
+                                <!--end::Input group-->
+                             </div>
+
                             <div class="col-md-4 border p-4">
                                 <!--begin::Input group-->
                                 <div class="fv-row mb-7">

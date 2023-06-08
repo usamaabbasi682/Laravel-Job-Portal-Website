@@ -86,4 +86,31 @@ trait ProfileTrait {
             'Single',
         ];
     }
+
+    public function organization_type() 
+    {
+        return [
+            'Government',
+            'Semi Government',
+            'Public',
+            'Private',
+            'NGO',
+            'International Agencies',
+        ];
+    }
+
+    public function team_size() 
+    {
+        return [
+            'Only Me',
+            '10 Members',
+            '10-20 Members',
+            '20-50 Members',
+            '50-100 Members',
+            '100-200 Members',
+            '200-500 Members',
+            '500+ Members',
+        ];
+    }
+
 }

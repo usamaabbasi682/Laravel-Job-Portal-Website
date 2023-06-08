@@ -92,6 +92,7 @@ class CandidateController extends Controller
      */
     public function edit(Candidate $candidate)
     {
+        $candidates = User::role('candidate')->get();
         $professions = $this->profession();
         $experiences = $this->experience();
         $jobRoles = $this->job_role();
@@ -102,7 +103,7 @@ class CandidateController extends Controller
         $languages = Language::orderBy('name')->get();
 
         return view('admin.order.candidate.edit',
-        compact('candidate','professions','experiences','jobRoles','educations','genders','maritalStatuses','skills','languages'));
+        compact('candidate','professions','experiences','jobRoles','educations','genders','maritalStatuses','skills','languages','candidates'));
     }
 
     /**
@@ -111,6 +112,7 @@ class CandidateController extends Controller
     public function update(UpdateRequest $request, Candidate $candidate)
     {
         $candidate->update([
+            'user_id' => $request->input('candidate'),
             'location' => $request->input('location'),
             'country' => $request->input('country'),
             'profession' => $request->input('profession'),
