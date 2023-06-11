@@ -10938,6 +10938,7 @@
 		<!--end::Modals-->
 		<!--begin::Javascript-->
 		<!--begin::Global Javascript Bundle(mandatory for all pages)-->
+		<script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
 		<script src="{{ asset('assets/plugins/global/plugins.bundle.js') }}"></script>
 		<script src="{{ asset('assets/js/scripts.bundle.js') }}"></script>
 		<!--end::Global Javascript Bundle-->
@@ -10951,11 +10952,12 @@
 		<!--begin::Custom Javascript(used for this page only)-->
 		<script src="{{ asset('assets/js/custom/utilities/modals/users-search.js') }}"></script>
 		<script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
+		<script src="{{ asset('assets/js/customs.js') }}"></script>
+		<script src="{{ asset('assets/media/flags/laos.svg') }}"></script>
 		<script>
 			CKEDITOR.replace('bio');
 			CKEDITOR.replace('vision');
 		</script>
-	
 		<!--end::Custom Javascript-->
 		<!--end::Javascript-->
 	</body>
