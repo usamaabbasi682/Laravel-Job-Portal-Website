@@ -285,7 +285,7 @@
                                     <select name="marital_status" aria-label="Select a Timezone" data-control="select2" data-placeholder="Marital Status" class="form-select form-select-solid">
                                         <option value=""></option>
                                         @forelse ($maritalStatuses as $m_status)
-                                            <option data-kt-flag="flags/united-states.svg"@selected($m_status == $candidate->marital_status) value="{{ $m_status }}">{{ ucwords($m_status) ?? '' }}</option>
+                                            <option data-kt-flag="flags/united-states.svg" @selected($m_status == $candidate->marital_status) value="{{ $m_status }}">{{ ucwords($m_status) ?? '' }}</option>
                                         @empty
                                             
                                         @endforelse

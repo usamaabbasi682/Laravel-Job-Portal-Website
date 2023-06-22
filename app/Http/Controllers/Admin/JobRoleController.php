@@ -44,7 +44,7 @@ class JobRoleController extends Controller
      */
     public function show(string $id)
     {
-        //
+        abort('404');
     }
 
     /**

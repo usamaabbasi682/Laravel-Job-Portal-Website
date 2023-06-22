@@ -113,4 +113,14 @@ trait ProfileTrait {
         ];
     }
 
+    public function job_type() 
+    {
+        return [
+            'Full Time',
+            'Part Time',
+            'Remote',
+            'Intern',
+            'Freelance',
+        ];
+    }
 }
