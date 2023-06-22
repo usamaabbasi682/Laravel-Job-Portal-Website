@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             LanguageASkillSeeder::class,
             IndustrySeeder::class,
+            JobPlanSeeder::class,
         ]);
         // \App\Models\User::factory(5)->create();
 
