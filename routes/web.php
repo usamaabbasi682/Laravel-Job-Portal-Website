@@ -7,7 +7,8 @@ use App\Http\Controllers\Admin\{
     UserController,OrderController,
     CandidateController,CompanyController,
     JobCategoryController,JobRoleController,
-    JobPlanController,
+    JobPlanController,JobController,TagController,
+    BenefitController,
 };
 
 /*
@@ -40,6 +41,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('jobCategory', JobCategoryController::class)->except('show');
         Route::resource('jobRole', JobRoleController::class)->except('show');
         Route::resource('jobPlan', JobPlanController::class);
+        Route::resource('jobs', JobController::class);
+        
+        // Attributes Section (ADMIN)
+        Route::resource('tags', TagController::class)->except('show');
+        Route::resource('benefits', BenefitController::class)->except('show');
     });
     
 });

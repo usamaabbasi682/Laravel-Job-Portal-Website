@@ -13,4 +13,14 @@ class JobRole extends Model
     protected $fillable = [
         'name',
     ];
+
+    /**
+     * Get all of the comments for the JobRole
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function jobs(): HasMany
+    {
+        return $this->hasMany(Job::class, 'job_role_id');
+    }
 }

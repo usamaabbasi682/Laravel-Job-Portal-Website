@@ -19,4 +19,14 @@ class JobCategory extends Model
     protected $casts = [
         'status' => 'boolean',
     ];
+
+    /**
+     * Get all of the comments for the JobCategory
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function jobs(): HasMany
+    {
+        return $this->hasMany(Job::class, 'job_category_id','id');
+    }
 }

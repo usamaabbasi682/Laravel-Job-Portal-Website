@@ -56,7 +56,7 @@ class JobPlanController extends Controller
      */
     public function show(string $id)
     {
-        //
+        abort('404');
     }
 
     /**
