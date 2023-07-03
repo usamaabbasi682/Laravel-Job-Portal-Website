@@ -24,6 +24,18 @@
 @section('main_content')
 <!--begin::Post-->
 <div class="content flex-row-fluid" id="kt_content">
+  <form id="company_filter_form" action="{{ route('admin.candidate.index') }}" method="get">
+    <div class="row pb-4">
+      <div class="col-md-4 fv-row">
+        <label class="fs-6 fw-semibold mb-2">Sort By</label>
+        <select class="form-select form-select-solid company_filter" data-control="select2" data-hide-search="true" data-placeholder="Sort By" name="sort_by">
+          <option value="">Select ...</option>
+          <option value="desc">{{ __('Latest') }}</option>
+          <option value="asc">{{ __('Oldest') }}</option>
+        </select>
+      </div>
+    </div>
+  </form>
   <!--begin::Card-->
   <div class="card">
     @if (session('success'))

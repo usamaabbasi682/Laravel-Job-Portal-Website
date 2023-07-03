@@ -33,6 +33,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('admin')->name('admin.')->middleware(['role:admin'])->group(function () {
         Route::get('/dashboard', [HomeController::class, 'index'])->name('home'); 
         Route::get('/icons',function() { return view('admin.manage_jobs.job_category.icons'); })->name('icons');
+        Route::get('jobs/{job}/{status}/update',[JobController::class,'update_job_status'])->name('job.status');
 
         Route::resource('orders', OrderController::class);
         Route::resource('users', UserController::class)->except('show');
@@ -48,5 +49,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('benefits', BenefitController::class)->except('show');
     });
     
+});
+
+Route::fallback(function() {
+    return to_route('admin.home');
 });
 

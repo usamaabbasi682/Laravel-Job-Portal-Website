@@ -19,9 +19,13 @@ class CandidateController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $candidates = Candidate::latest()->get();
+        if($request->filled('sort_by')) {
+            $candidates = Candidate::orderBy('id',$request->get('sort_by'))->get();
+        } else {
+            $candidates = Candidate::latest()->get();
+        }
         return view('admin.order.candidate.index',compact('candidates'));
     }
 
@@ -82,9 +86,9 @@ class CandidateController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Candidate $candidate)
     {
-        //
+        return view('admin.order.candidate.view',compact('candidate'));
     }
 
     /**
@@ -151,6 +155,6 @@ class CandidateController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        abort(404);
     }
 }

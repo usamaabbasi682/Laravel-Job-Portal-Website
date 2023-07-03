@@ -1,0 +1,233 @@
+@extends('layouts.app') 
+@section('title','Dashboard')
+@section('top_heading')
+<div id="kt_toolbar_container" class="container-xxl d-flex flex-stack flex-wrap gap-2">
+  <!--begin::Page title-->
+  <div class="page-title d-flex flex-column align-items-start me-3 py-2 py-lg-0 gap-2">
+    <!--begin::Title-->
+    <h1 class="d-flex text-dark fw-bold m-0 fs-3">Jobs</h1>
+    <!--end::Title-->
+    <!--begin::Breadcrumb-->
+    <ul class="breadcrumb breadcrumb-dot fw-semibold text-gray-600 fs-7">
+      <!--begin::Item-->
+      <li class="breadcrumb-item text-gray-600">Dashboard</li>
+      <!--end::Item-->
+      <!--begin::Item-->
+      <li class="breadcrumb-item text-gray-500">Jobs</li>
+      <!--end::Item-->
+    </ul>
+    <!--end::Breadcrumb-->
+  </div>
+  <!--end::Page title-->
+</div>
+@endsection 
+@section('main_content')
+<!--begin::Post-->
+<div class="content flex-row-fluid" id="kt_content">
+  <form id="company_filter_form" action="{{ route('admin.jobs.index') }}" method="get">
+    <div class="row pb-4">
+      <div class="col-md-3 fv-row">
+        <label class="fs-6 fw-semibold mb-2">Job Category</label>
+        <select class="form-select form-select-solid company_filter" data-control="select2" data-hide-search="true" data-placeholder="Category Type" name="job_category">
+          <option value="">Select ...</option>
+          @forelse ($categories as $category)
+            <option value="{{ $category->id ?? '' }}" @selected($category->id == request()->get('job_category')) >{{ ucwords($category->name) ?? '' }}</option>
+          @empty @endforelse
+        </select>
+      </div>
+      <div class="col-md-3 fv-row">
+        <label class="fs-6 fw-semibold mb-2">Job Type</label>
+        <select class="form-select form-select-solid company_filter" data-control="select2" data-hide-search="true" data-placeholder="Job Type" name="job_type">
+          <option value="">Select ...</option>
+          @forelse ($jobTypes as $jobTypes)
+            <option value="{{ $jobTypes ?? '' }}" @selected($jobTypes == request()->get('job_type'))>{{ ucwords($jobTypes) ?? '' }}</option>
+          @empty
+            
+          @endforelse
+        </select>
+      </div>
+      <div class="col-md-3 fv-row">
+        <label class="fs-6 fw-semibold mb-2">Experience</label>
+        <select class="form-select form-select-solid company_filter" data-control="select2" data-hide-search="true" data-placeholder="Experience" name="experience">
+          <option value="">Select ...</option>
+          @forelse ($experiences as $experience)
+            <option value="{{ $experience ?? '' }}" @selected($experience == request()->get('experience'))>{{ ucwords($experience) ?? '' }}</option>
+          @empty
+          
+         @endforelse
+        </select>
+      </div>
+      <div class="col-md-3 fv-row">
+        <label class="fs-6 fw-semibold mb-2">Sort By</label>
+        <select class="form-select form-select-solid company_filter" data-control="select2" data-hide-search="true" data-placeholder="Sort By" name="sort_by">
+          <option value="">Select ...</option>
+          <option value="desc">{{ __('Latest') }}</option>
+          <option value="asc">{{ __('Oldest') }}</option>
+        </select>
+      </div>
+    </div>
+  </form>
+  <!--begin::Card-->
+  <div class="card">
+    @if (session('success'))
+        <div class="alert alert-success" role="alert">
+            <strong>{{ session('success') }}</strong>
+        </div> 
+    @endif
+
+    @if (session('error'))
+        <div class="alert alert-danger" role="alert">
+            <strong>{{ session('error') }}</strong>
+        </div>
+    @endif
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-6">
+      <!--begin::Card title-->
+      <div class="card-title">
+        <!--begin::Search-->
+        <div class="d-flex align-items-center position-relative my-1">
+          <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+          <span class="svg-icon svg-icon-1 position-absolute ms-6">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="currentColor" />
+              <path
+                d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                fill="currentColor"
+              />
+            </svg>
+          </span>
+          <!--end::Svg Icon-->
+          <input type="text" data-kt-user-table-filter="search" class="form-control form-control-solid w-250px ps-14" placeholder="Search Company" />
+        </div>
+      </div>
+      <!--begin::Card toolbar-->
+      <div class="card-toolbar">
+        <!--begin::Group actions-->
+        <div class="d-flex justify-content-end align-items-center d-none" data-kt-user-table-toolbar="selected">
+          <div class="fw-bold me-5"><span class="me-2" data-kt-user-table-select="selected_count"></span>Selected</div>
+          <button type="button" class="btn btn-danger" data-kt-user-table-select="delete_selected">Delete Selected</button>
+        </div>
+        <!--end::Group actions-->
+
+        <a href="{{ route('admin.jobs.create') }}" class="btn btn-primary">
+            <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
+            <span class="svg-icon svg-icon-2">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect opacity="0.5" x="11.364" y="20.364" width="16" height="2" rx="1" transform="rotate(-90 11.364 20.364)" fill="currentColor"></rect>
+                    <rect x="4.36396" y="11.364" width="16" height="2" rx="1" fill="currentColor"></rect>
+                </svg>
+            </span>
+            <!--end::Svg Icon-->Add Job
+        </a>
+      </div>
+      <!--end::Card toolbar-->
+    </div>
+    <!--end::Card header-->
+    <!--begin::Card body-->
+    <div class="card-body py-4">
+      <!--begin::Table-->
+      <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_users">
+        <!--begin::Table head-->
+        <thead>
+          <!--begin::Table row-->
+          <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+            <th class="min-w-20px pe-2">#</th>
+            <th class="min-w-215px">Job</th>
+            <th class="min-w-115px">Salary</th>
+            <th class="min-w-115px">Category/Role</th>
+            <th class="min-w-115px">Deadline</th>
+            <th class="min-w-115px">Status</th>
+            <th class="text-end min-w-90px">Actions</th>
+          </tr>
+          <!--end::Table row-->
+        </thead>
+        <!--end::Table head-->
+        <!--begin::Table body-->
+        <tbody class="text-gray-600 fw-semibold">
+            @forelse ($jobs as $job)
+            <tr>
+                <td>{{ $loop->iteration ?? '' }}</td>
+                <td class="d-flex align-items-center">
+                  <div class="symbol symbol-circle symbol-50px overflow-hidden me-3">
+                    <a href="javascript:void(0)">
+                      <div class="symbol-label">
+                        @php
+                          $image=$job->company->getMedia('company_logo')->first();
+                        @endphp
+                        @isset($image)
+                          <img src="{{ asset('storage/'.$image->id.'/'.$image->file_name) ?? '' }}" class="w-100 border" alt="image" />
+                        @else 
+                          <img src="{{ asset('assets/media/avatars/300-6.jpg') }}" alt="Emma Smith" class="w-100" />
+                        @endisset
+                      </div>
+                    </a>
+                  </div>
+    
+                  <div class="d-flex flex-column">
+                    <a href="javascript:void(0)" class="text-gray-800 text-hover-primary mb-1">{{ ucwords($job->title) ?? '' }}</a>
+                    <span>{{ $job->company->company_name ?? '' }} . {{ $job->job_type ?? '' }} . {{ $job->salary_type }}</span>
+                  </div>
+                </td>
+                <td>
+                    @php
+                        $selected_features = json_decode($job->salary_details,true);
+                    @endphp
+                    @if ($selected_features['job_feature_type'] == 'salary_range')
+                        <i class="fas fa-money-bill" style="font-size: 15px;"></i>&nbsp; <b>{{ $selected_features['min_salary'] ?? '' }} - {{ $selected_features['max_salary'] ?? '' }} USD</b>
+                    @else 
+                    <i class="fas fa-money-bill" style="font-size: 15px;"></i>&nbsp; <b>{{ $selected_features['custom_salary'] ?? '' }}</b>
+                    @endif
+                    <p>{{ $job->salary_type ?? '' }}</p>
+                </td>
+                <td>
+                    <p>{{ strtoupper($job->category->name) ?? '' }} <br> {{ $job->jobrole->name ?? '' }}</p>
+                </td>
+                <td>
+                    <p>{{ $job->deadline ?? '' }}</p>
+                </td>
+                <td>
+                    @if ($job->status)
+                      <a href="{{ route('admin.job.status',['job'=>$job,'status'=>'unpublish']) }}" class="badge badge-light-success fw-bold">Publish</a>
+                    @else
+                      <a href="{{ route('admin.job.status',['job'=>$job,'status'=>'publish']) }}" class="badge badge-light-danger fw-bold">Unpublish</a>
+                    @endif
+                </td>
+                <td class="text-end">
+                  <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                    Actions
+                    <span class="svg-icon svg-icon-5 m-0">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                          d="M11.4343 12.7344L7.25 8.55005C6.83579 8.13583 6.16421 8.13584 5.75 8.55005C5.33579 8.96426 5.33579 9.63583 5.75 10.05L11.2929 15.5929C11.6834 15.9835 12.3166 15.9835 12.7071 15.5929L18.25 10.05C18.6642 9.63584 18.6642 8.96426 18.25 8.55005C17.8358 8.13584 17.1642 8.13584 16.75 8.55005L12.5657 12.7344C12.2533 13.0468 11.7467 13.0468 11.4343 12.7344Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                  <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-125px py-4" data-kt-menu="true">
+                    <div class="menu-item px-3">
+                      <a href="{{ route('admin.jobs.edit',$job) }}" class="menu-link form-control px-3">Edit</a>
+                    </div>
+                    <div class="menu-item px-3">
+                      <a href="{{ route('admin.jobs.show',$job) }}" class="menu-link form-control px-3">View</a>
+                    </div>
+                    <div class="menu-item px-3">
+                        <form action="{{ route('admin.jobs.destroy',$job) }}" method="post">
+                            @csrf
+                            @method('DELETE')
+                            <button  class="menu-link form-control px-3 b-0"  type="submit">{{ __('Delete') }}</button>
+                        </form>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            @empty
+                
+            @endforelse
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!--end::Post-->
+@endsection

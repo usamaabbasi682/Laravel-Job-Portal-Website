@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('education',50);
             $table->string('job_type',50);
             $table->text('description')->nullable(true);
+            $table->enum('status',['1','0'])->default('1');
             $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             $table->foreign('job_category_id')->references('id')->on('job_categories')->onDelete('cascade');
             $table->foreign('job_role_id')->references('id')->on('job_roles')->onDelete('cascade');
