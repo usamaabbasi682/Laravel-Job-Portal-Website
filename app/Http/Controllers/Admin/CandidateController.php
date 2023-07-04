@@ -5,27 +5,24 @@ namespace App\Http\Controllers\Admin;
 use App\Traits\ProfileTrait;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\{
-    Language,
-    Candidate,
-    Skill,
-    User,
-};
+use App\Models\{Language,Candidate,Skill,User,};
 use App\Http\Requests\Candidate\{UpdateRequest,CreateRequest};
+use App\Services\Interfaces\CandidateServiceInterface;
 
 class CandidateController extends Controller
 {
     use ProfileTrait;
+    protected $candidateService;
+
+    public function __construct(CandidateServiceInterface $candidateService) {
+        $this->candidateService = $candidateService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        if($request->filled('sort_by')) {
-            $candidates = Candidate::orderBy('id',$request->get('sort_by'))->get();
-        } else {
-            $candidates = Candidate::latest()->get();
-        }
+        $candidates=$this->candidateService->index($request);
         return view('admin.order.candidate.index',compact('candidates'));
     }
 
@@ -53,32 +50,10 @@ class CandidateController extends Controller
      */
     public function store(CreateRequest $request)
     {
-        $candidate = Candidate::create([
-            'user_id' => $request->input('candidate'),
-            'country' => $request->input('country'),
-            'location' => $request->input('location'),
-            'profession' => $request->input('profession'),
-            'experience' => $request->input('experience'),
-            'job_role' => $request->input('job_role'),
-            'education' => $request->input('education'),
-            'gender' => $request->input('gender'),
-            'website' => $request->input('website'),
-            'dob' => $request->input('dob'),
-            'marital_status' => $request->input('marital_status'),
-            'bio' => $request->input('bio'),
-        ]);
-
-        if ($request->has('skills')) 
-        $candidate->skills()->attach($request->input('skills'));
-        
-        if ($request->has('language')) 
-        $candidate->languages()->attach($request->input('language'));
-        
-        if ($request->hasFile('cv')) 
-        $candidate->addMediaFromRequest('cv')->toMediaCollection('cv');
-        
-        if ($candidate) 
-        return to_route('admin.candidate.index')->with('success','Candidate Information has been successfully Added');
+        $result=$this->candidateService->store($request);        
+        if ($result){
+            return to_route('admin.candidate.index')->with('success','Candidate Information has been successfully Added');
+        } 
          
         return to_route('admin.candidate.index')->with('error','Something went wrong!');
     }
@@ -115,37 +90,11 @@ class CandidateController extends Controller
      */
     public function update(UpdateRequest $request, Candidate $candidate)
     {
-        $candidate->update([
-            'user_id' => $request->input('candidate'),
-            'location' => $request->input('location'),
-            'country' => $request->input('country'),
-            'profession' => $request->input('profession'),
-            'experience' => $request->input('experience'),
-            'job_role' => $request->input('job_role'),
-            'education' => $request->input('education'),
-            'gender' => $request->input('gender'),
-            'website' => $request->input('website'),
-            'dob' => $request->input('dob'),
-            'marital_status' => $request->input('marital_status'),
-            'bio' => $request->input('bio'),
-        ]);
+        $result=$this->candidateService->update($request,$candidate);  
 
-        if ($request->has('skills')) 
-        $candidate->skills()->sync($request->input('skills'));
-
-        if ($request->has('language')) 
-        $candidate->languages()->sync($request->input('language'));
-
-        if ($request->hasFile('cv')) {
-            $file = $candidate->getFirstMedia('cv');
-            if (!empty($file)) {
-                $file->delete();
-            }
-            $candidate->addMediaFromRequest('cv')->toMediaCollection('cv');
-        }
-
-        if ($candidate) 
-        return to_route('admin.candidate.index')->with('success','Candidate Information has been successfully Updated');
+        if ($result) {
+            return to_route('admin.candidate.index')->with('success','Candidate Information has been successfully Updated');
+        } 
          
         return to_route('admin.candidate.index')->with('error','Something went wrong!');
     }
@@ -153,8 +102,9 @@ class CandidateController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Candidate $candidate)
     {
-        abort(404);
+        $candidate->delete();
+        return to_route('admin.candidate.index')->with('error','Candidate deleted successfully.');
     }
 }

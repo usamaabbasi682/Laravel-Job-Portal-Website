@@ -37,7 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         Route::resource('orders', OrderController::class);
         Route::resource('users', UserController::class)->except('show');
-        Route::resource('candidate', CandidateController::class)->except('destroy');
+        Route::resource('candidate', CandidateController::class);
         Route::resource('company', CompanyController::class);
         Route::resource('jobCategory', JobCategoryController::class)->except('show');
         Route::resource('jobRole', JobRoleController::class)->except('show');

@@ -8,44 +8,23 @@ use App\Models\Industry;
 use App\Traits\ProfileTrait;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Services\Interfaces\CompanyServiceInterface;
 use App\Http\Requests\Company\{CreateRequest,UpdateRequest};
 
 class CompanyController extends Controller
 {
     use ProfileTrait;
+    protected $companyService;
+    public function __construct(CompanyServiceInterface $companyService) {
+        $this->companyService = $companyService;
+    }
+    
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $companies = Company::latest()->get();
-        // Filter for Organization and Industry
-        if ($request->filled('org_type')) 
-        {
-            if ($request->filled('industry_type')) 
-            {
-                $companies = Company::search($request->get('org_type'))
-                ->where('industry_id',$request->get('industry_type'))
-                ->get();
-            } elseif($request->filled('sort_by')) {
-                $companies = Company::search($request->get('org_type'))
-                ->orderBy('id',$request->get('sort_by'))
-                ->get();
-            } else {
-                $companies = Company::search($request->get('org_type'))->get();
-            }
-        } 
-
-        // Filter for Latest & Oldest
-        if ($request->filled('sort_by') && !$request->filled('org_type')) {
-            $companies = Company::orderBy('id',$request->get('sort_by'))->get();
-        }
-
-        // Filter for Industry
-        if($request->filled('industry_type')) {
-            $companies = Company::search($request->get('industry_type'))->get();
-        } 
-
+        $companies = $this->companyService->index($request);
         $organizations = $this->organization_type();
         $industries = Industry::orderBy('name')->get();
         return view('admin.order.company.index',compact('companies','organizations','industries'));
@@ -68,35 +47,11 @@ class CompanyController extends Controller
      */
     public function store(CreateRequest $request)
     {
-        try {
-
-            $company = Company::create([
-                'user_id' => $request->input('employee'),
-                'industry_id' => $request->input('industry'),
-                'company_name' => $request->input('company_name'),
-                'country' => $request->input('country'),
-                'location' => $request->input('location'),
-                'contact' => $request->input('phone'),
-                'email' => $request->input('email'),
-                'org_type' => $request->input('organization'),
-                'team_size' => $request->input('member'),
-                'website' => $request->input('website'),
-                'establishment_date' => $request->input('establishment_date'),
-                'bio' => $request->input('bio'),
-                'vision' => $request->input('vision'),
-            ]);
-    
-            if ($request->hasFile('logo')) 
-            $company->addMediaFromRequest('logo')->toMediaCollection('company_logo');
-            
-            if ($request->hasFile('banner')) 
-            $company->addMediaFromRequest('banner')->toMediaCollection('company_banner');
-    
+        $result=$this->companyService->store($request);        
+        if ($result){
             return to_route('admin.company.index')->with('success','Company Details has been successfully Added');
-
-        } catch (\Exception $e) {
-            return to_route('admin.company.index')->with('error','Something went wrong!');
-        }
+        } 
+        return to_route('admin.company.index')->with('error','Something went wrong!');
     }
 
     /**
@@ -124,45 +79,11 @@ class CompanyController extends Controller
      */
     public function update(UpdateRequest $request, Company $company)
     {
-        try {
-            
-            $company->update([
-                'user_id' => $request->input('employee'),
-                'industry_id' => $request->input('industry'),
-                'company_name' => $request->input('company_name'),
-                'country' => $request->input('country'),
-                'location' => $request->input('location'),
-                'contact' => $request->input('phone'),
-                'email' => $request->input('email'),
-                'org_type' => $request->input('organization'),
-                'team_size' => $request->input('member'),
-                'website' => $request->input('website'),
-                'establishment_date' => $request->input('establishment_date'),
-                'bio' => $request->input('bio'),
-                'vision' => $request->input('vision'),
-            ]);
-
-            if ($request->hasFile('logo')) {
-                $logo = $company->getFirstMedia('company_logo');
-                if (!empty($logo)) {
-                    $logo->delete();
-                }
-                $company->addMediaFromRequest('logo')->toMediaCollection('company_logo');
-            }
-
-            if ($request->hasFile('banner')) {
-                $banner = $company->getFirstMedia('company_banner');
-                if (!empty($banner)) {
-                    $banner->delete();
-                }
-                $company->addMediaFromRequest('banner')->toMediaCollection('company_banner');
-            }
-
+        $result=$this->companyService->update($request,$company);  
+        if ($result) {
             return to_route('admin.company.index')->with('success','Company Information has been successfully Updated');
-
-        } catch (\Exception $e) {
-            return to_route('admin.company.index')->with('error','Something went wrong!');
-        }
+        } 
+        return to_route('admin.company.index')->with('error','Something went wrong!');
     }
 
     /**
