@@ -16,10 +16,39 @@ class CompanyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $companies = Company::latest()->get();
-        return view('admin.order.company.index',compact('companies'));
+        // Filter for Organization and Industry
+        if ($request->filled('org_type')) 
+        {
+            if ($request->filled('industry_type')) 
+            {
+                $companies = Company::search($request->get('org_type'))
+                ->where('industry_id',$request->get('industry_type'))
+                ->get();
+            } elseif($request->filled('sort_by')) {
+                $companies = Company::search($request->get('org_type'))
+                ->orderBy('id',$request->get('sort_by'))
+                ->get();
+            } else {
+                $companies = Company::search($request->get('org_type'))->get();
+            }
+        } 
+
+        // Filter for Latest & Oldest
+        if ($request->filled('sort_by') && !$request->filled('org_type')) {
+            $companies = Company::orderBy('id',$request->get('sort_by'))->get();
+        }
+
+        // Filter for Industry
+        if($request->filled('industry_type')) {
+            $companies = Company::search($request->get('industry_type'))->get();
+        } 
+
+        $organizations = $this->organization_type();
+        $industries = Industry::orderBy('name')->get();
+        return view('admin.order.company.index',compact('companies','organizations','industries'));
     }
 
     /**

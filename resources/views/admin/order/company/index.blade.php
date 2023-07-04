@@ -24,6 +24,40 @@
 @section('main_content')
 <!--begin::Post-->
 <div class="content flex-row-fluid" id="kt_content">
+  <form id="company_filter_form" action="{{ route('admin.company.index') }}" method="get">
+  <div class="row pb-4">
+		<div class="col-md-4 fv-row">
+      <label class="fs-6 fw-semibold mb-2">Organization Type</label>
+      <select class="form-select form-select-solid company_filter" data-control="select2" data-hide-search="true" data-placeholder="Organization Type" name="org_type">
+        <option value="">Select ...</option>
+        @forelse ($organizations as $organization)
+          <option value="{{ $organization ?? '' }}" @selected($organization == request()->get('org_type')) >{{ ucwords($organization) ?? '' }}</option>
+        @empty
+          
+        @endforelse
+      </select>
+    </div>
+    <div class="col-md-4 fv-row">
+      <label class="fs-6 fw-semibold mb-2">Industry Type</label>
+      <select class="form-select form-select-solid company_filter" data-control="select2" data-hide-search="true" data-placeholder="Industry Type" name="industry_type">
+        <option value="">Select ...</option>
+        @forelse ($industries as $industry)
+          <option value="{{ $industry->id ?? '' }}">{{ ucwords($industry->name) ?? '' }}</option>
+        @empty
+          
+        @endforelse
+      </select>
+    </div>
+    <div class="col-md-4 fv-row">
+      <label class="fs-6 fw-semibold mb-2">Sort By</label>
+      <select class="form-select form-select-solid company_filter" data-control="select2" data-hide-search="true" data-placeholder="Sort By" name="sort_by">
+        <option value="">Select ...</option>
+        <option value="desc">{{ __('Latest') }}</option>
+        <option value="asc">{{ __('Oldest') }}</option>
+      </select>
+    </div>
+  </div>
+</form>
   <!--begin::Card-->
   <div class="card">
     @if (session('success'))
@@ -67,8 +101,9 @@
           <button type="button" class="btn btn-danger" data-kt-user-table-select="delete_selected">Delete Selected</button>
         </div>
         <!--end::Group actions-->
+        <a href="{{ route('admin.company.index') }}" class="btn btn-primary">Reset Filters</a>
 
-        <a href="{{ route('admin.company.create') }}" class="btn btn-primary">
+        <a href="{{ route('admin.company.create') }}" class="btn btn-primary mr-4" style="margin-left: 11px;">
             <!--begin::Svg Icon | path: icons/duotune/arrows/arr075.svg-->
             <span class="svg-icon svg-icon-2">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -111,12 +146,12 @@
                     <a href="javascript:void(0)">
                       <div class="symbol-label">
                         @php
-                          $image=$company->user->getMedia('profile_image')->first();
+                          $companyLogo=$company->getMedia('company_logo')->first();
                         @endphp
-                        @isset($image)
-                          <img src="{{ asset('storage/'.$image->id.'/'.$image->file_name) ?? '' }}" class="w-100" alt="image" />
+                        @isset($companyLogo)
+                          <img src="{{ asset('storage/'.$companyLogo->id.'/'.$companyLogo->file_name) ?? '' }}" class="w-100" alt="image" />
                         @else 
-                          <img src="{{ asset('assets/media/avatars/300-6.jpg') }}" alt="Emma Smith" class="w-100" />
+                          <img src="{{ asset('assets/media/avatars/300-6.jpg') }}" alt="Default Logo" class="w-100" />
                         @endisset
                       </div>
                     </a>

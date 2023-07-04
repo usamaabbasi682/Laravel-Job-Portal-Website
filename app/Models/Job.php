@@ -6,13 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Job extends Model
+class Job extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
     protected $table="jobs";
     protected $primaryKey = 'id';
     protected $guarded = [];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'status' => 'boolean',
+    ];
 
     /**
      * The roles that belong to the Job
@@ -63,5 +74,16 @@ class Job extends Model
     public function jobrole(): BelongsTo
     {
         return $this->belongsTo(JobRole::class, 'job_role_id');
+    }
+
+
+    /**
+     * Get the user that owns the Job
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class, 'company_id');
     }
 }

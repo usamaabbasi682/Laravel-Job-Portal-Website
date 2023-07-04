@@ -82,7 +82,7 @@
                            <select name="company" aria-label="Select a Timezone" data-control="select2" data-placeholder="Select Company" class="form-select form-select-solid">
                               <option value=""></option>
                               @forelse ($companies as $company)
-                              <option data-kt-flag="flags/united-states.svg" @selected($company->id == $job->id) value="{{ $company->id ?? '' }}">{{ ucwords($company->company_name) ?? '' }}</option>
+                              <option data-kt-flag="flags/united-states.svg" @selected($company->id == $job->company_id) value="{{ $company->id ?? '' }}">{{ ucwords($company->company_name) ?? '' }}</option>
                               @empty @endforelse
                            </select>
                            @error('company')
@@ -172,16 +172,18 @@
                         <div class="form-group">
                             <label class="fs-6 fw-semibold form-label">Job Feature</label>
                             <div class="radio-inline mt-8">
-                                <label class="radio radio-square">
-                                    <input type="radio" checked id="salary_range" class="form-check-input" value="salary_range" name="salary_details">
-                                    <span></span>
-                                    Salary Range
-                                </label>
-                                <label class="radio radio-square" style="padding-left: 20px;">
-                                    <input type="radio" id="custom_salary" class="form-check-input" value="custom_salary" name="salary_details">
-                                    <span></span>
-                                    Custom Salary
-                                </label>
+                              @php
+                                 $features = ['Salary Range'=>'salary_range','Custom Salary'=>'custom_salary'];
+                                 $selected_features = json_decode($job->salary_details,true);
+                              @endphp
+                              <input type="hidden" value="{{ $selected_features['job_feature_type'] }}" id="selected_feature">
+                              @foreach ($features as $feature_key => $feature_val)
+                              <label class="radio radio-square">
+                                 <input type="radio" @checked($feature_val == $selected_features['job_feature_type']) id="{{ $feature_val ?? '' }}" class="form-check-input" value="{{ $feature_val ?? '' }}" name="salary_details">
+                                 <span></span>
+                                 {{ ucwords($feature_key) ?? '' }}
+                             </label>
+                              @endforeach
                             </div>
                         </div>
                         <div class="row" id="salary_range_row">
@@ -194,7 +196,7 @@
                                  <hr class="p-3" />
                                  <!--end::Label-->
                                  <!--begin::Input-->
-                                 <input type="number" class="form-control form-control-solid" name="min_salary_range" placeholder="Min Salary Range" value="{{ old('min_salary_range') }}" />
+                                 <input type="number" value="@isset($selected_features['min_salary']){{ $selected_features['min_salary'] ?? '' }}@endisset" class="form-control form-control-solid" name="min_salary_range" placeholder="Min Salary Range" value="{{ old('min_salary_range') }}" />
                                  @error('min_salary_range')
                                  <span class="text-danger">
                                     <strong>{{ $message }}</strong>
@@ -212,7 +214,7 @@
                                  <hr class="p-3" />
                                  <!--end::Label-->
                                  <!--begin::Input-->
-                                 <input type="number" class="form-control form-control-solid" name="max_salary_range" placeholder="Max Salary Range" value="{{ old('max_salary_range') }}" />
+                                 <input type="number" value="@isset($selected_features['max_salary']){{ $selected_features['max_salary'] ?? '' }}@endisset" class="form-control form-control-solid" name="max_salary_range" placeholder="Max Salary Range" value="{{ old('max_salary_range') }}" />
                                  @error('max_salary_range')
                                  <span class="text-danger">
                                     <strong>{{ $message }}</strong>
@@ -323,6 +325,10 @@
                          <div class="mb-10">
                             <!--begin::Label-->
                             <label class="form-label fw-bold fs-6 text-gray-700 required">Receive Applications</label>
+                            @php
+                              $applicant = json_decode($job->applicant,true);
+                            @endphpp
+                            <input type="hidden" value="{{ $applicant['receive_application_type'] }}" id="applicant_apply">
                             <!--end::Label-->
                             <!--begin::Select-->
                             <select name="receive_applications" aria-label="Select a Timezone" data-control="select2" data-placeholder="Select Receive Applications" class="form-select form-select-solid">
@@ -330,8 +336,19 @@
                               @php
                               $receive_applications = ['Current-Platform','Email-Address','Custom-URL'];
                               @endphp
+                              @if ($applicant['receive_application_type'] == 'Custom-URL')
+                                 @php
+                                    $email = '';
+                                    $custom_url = $applicant['apply_url'];
+                                 @endphp
+                              @elseif ($applicant['receive_application_type'] == 'Email-Address')
+                                 @php
+                                    $custom_url = '';
+                                    $email = $applicant['email'];
+                                 @endphp
+                              @endif
                                @foreach ($receive_applications as $ra)
-                               <option data-kt-flag="flags/united-states.svg" @selected($ra == old('receive_applications')) value="{{ $ra }}">{{ ucwords($ra) ?? '' }}</option>
+                               <option data-kt-flag="flags/united-states.svg" @selected($ra == $applicant['receive_application_type']) value="{{ $ra }}">{{ ucwords($ra) ?? '' }}</option>
                                @endforeach
                             </select>
                             <!--end::Select-->
@@ -346,7 +363,7 @@
                             <label class="form-label fw-bold fs-6 text-gray-700 required">Email Address</label>
                             <!--end::Label-->
                             <!--begin::Select-->
-                            <input type="text" class="form-control form-control-solid" name="email" placeholder="Enter Email" value="{{ old('email') }}" />
+                            <input type="text" class="form-control form-control-solid" name="email" placeholder="Enter Email" value="{{ $email ?? '' }}" />
                             <!--end::Select-->
                             @error('email')
                             <span class="text-danger">
@@ -359,7 +376,7 @@
                             <label class="form-label fw-bold fs-6 text-gray-700 required">Apply URL</label>
                             <!--end::Label-->
                             <!--begin::Select-->
-                            <input type="text" class="form-control form-control-solid" name="apply_url" placeholder="Enter URL" value="{{ old('apply_url') }}" />
+                            <input type="text" class="form-control form-control-solid" name="apply_url" placeholder="Enter URL" value="{{ $custom_url ?? '' }}" />
                             <!--end::Select-->
                             @error('apply_url')
                             <span class="text-danger">

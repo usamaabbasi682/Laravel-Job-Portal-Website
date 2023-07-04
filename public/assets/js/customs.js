@@ -6,6 +6,25 @@ $(document).ready(function () {
         $('#preview_limit').show();
     }
 
+    if ($('#selected_feature').val() == 'custom_salary') {
+        $('#custom_salary_row').removeClass('d-none');
+        $('#salary_range_row').addClass('d-none');
+    } else {
+        $('#salary_range_row').removeClass('d-none');
+        $('#custom_salary_row').addClass('d-none');
+    }
+
+    if ($('#applicant_apply').val() == 'Email-Address') {
+        $('#emailAddress').removeClass('d-none');
+        $('#applyUrl').addClass('d-none');
+    }else if ($('#applicant_apply').val() == 'Custom-URL') {
+        $('#applyUrl').removeClass('d-none');
+        $('#emailAddress').addClass('d-none');
+    } else {
+        $('#applyUrl').addClass('d-none');
+        $('#emailAddress').addClass('d-none');
+    }
+
     $('#unlimited').click(function() {
         $('#preview_limit').hide();
     });
@@ -37,6 +56,12 @@ $(document).ready(function () {
     $('#custom_salary').click(function() {
         $('#custom_salary_row').removeClass('d-none');
         $('#salary_range_row').addClass('d-none');
+    });
+
+    // Company Filters
+
+    $('.company_filter').change(function() {
+        $('#company_filter_form').submit();
     });
 
 });
