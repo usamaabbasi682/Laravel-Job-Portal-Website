@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\{
     JobPlanController,JobController,TagController,
     BenefitController,
 };
-
+use App\Http\Controllers\Frontend\PageController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,6 +27,7 @@ Route::get('/', function () {
 });
 
 Auth::routes(['verify'=>true]);
+Route::get('/{page}/{slug?}',PageController::class);
 
 Route::middleware(['auth', 'verified'])->group(function () {
     

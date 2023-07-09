@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('job_category_id');
             $table->unsignedBigInteger('job_role_id');
             $table->string('title'); 
+            $table->string('slug')->unique()->nullable(true);
             $table->string('vacancies',50);
             $table->date('deadline');
             $table->json('salary_details');

@@ -86,4 +86,15 @@ class Job extends Model implements HasMedia
     {
         return $this->belongsTo(Company::class, 'company_id');
     }
+
+    // Query Scopes
+
+    public function scopeFeaturedHighlightedJob($query) {
+        return $query->select(['company_id','title','job_type','country','salary_details','deadline','job_feature','slug'])
+        ->whereIn('job_feature',['highlight','featured']);
+    }
+
+    public function scopeJobs($query) {
+        return $query->select(['company_id','title','job_type','country','salary_details','deadline','job_feature','slug'])->whereNull('job_feature');
+    }
 }
