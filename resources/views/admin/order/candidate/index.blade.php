@@ -168,13 +168,13 @@
                     <div class="menu-item px-3">
                       <a href="{{ route('admin.candidate.show',$candidate) }}" class="menu-link form-control px-3">View</a>
                     </div>
-                    {{-- <div class="menu-item px-3">
-                        <form action="{{ route('admin.users.destroy',$user) }}" method="post">
+                    <div class="menu-item px-3">
+                        <form action="{{ route('admin.candidate.destroy',$candidate) }}" method="post">
                             @csrf
                             @method('DELETE')
                             <button  class="menu-link form-control px-3 b-0"  type="submit">{{ __('Delete') }}</button>
                         </form>
-                    </div> --}}
+                    </div>
                   </div>
                 </td>
               </tr>

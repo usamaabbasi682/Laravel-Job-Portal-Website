@@ -12,50 +12,23 @@ use App\Traits\ProfileTrait;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Job\CreateRequest;
+use App\Services\Interfaces\JobServiceInterface;
 
 class JobController extends Controller
 {
     use ProfileTrait;
+    protected $jobService;
+
+    public function __construct(JobServiceInterface $jobService) {
+        $this->jobService = $jobService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        if ($request->filled('job_category')) 
-        {
-            $jobs = Job::where('job_category_id',$request->get('job_category'));
-            if($request->filled('job_type')) {
-                $jobs->where('job_type',$request->get('job_type'));
-            }
-            if ($request->filled('experience')) {
-                $jobs->where('experience',$request->get('experience'));
-            }
-            if ($request->filled('sort_by')) {
-                $jobs->orderBy('id',$request->get('sort_by'));
-            }
-            $jobs = $jobs->get(); 
-       
-        } elseif($request->filled('job_type')) {
-            $jobs = Job::where('job_type',$request->get('job_type'));
-            if ($request->filled('experience')) {
-                $jobs->where('experience',$request->get('experience'));
-            }
-            if ($request->filled('sort_by')) {
-                $jobs->orderBy('id',$request->get('sort_by'));
-            }
-            $jobs = $jobs->get(); 
-        } elseif ($request->filled('experience')) {
-            $jobs = Job::where('experience',$request->get('experience'));
-            if ($request->filled('sort_by')) {
-                $jobs->orderBy('id',$request->get('sort_by'));
-            }
-            $jobs = $jobs->get();
-        } elseif($request->filled('sort_by')) {
-            $jobs = $jobs->orderBy('job_type',$request->get('job_type'))->get();
-        } else {
-            $jobs = Job::all();
-        } 
-
+        $jobs = $this->jobService->index($request);
         $categories = JobCategory::orderBy('name')->get();
         $jobTypes = $this->job_type();
         $experiences = $this->experience();
@@ -86,67 +59,11 @@ class JobController extends Controller
     // CreateRequest
     public function store(CreateRequest $request)
     {
-        try {
-            if ($request->input('salary_details') == 'salary_range') {
-                $salaryDetails = [
-                    'job_feature_type' => 'salary_range',
-                    'min_salary' => $request->input('min_salary_range'),
-                    'max_salary' => $request->input('max_salary_range'),
-                ];
-            } else {
-                $salaryDetails = [
-                    'job_feature_type' => 'custom_salary',
-                    'custom_salary' => $request->input('custom_salary'),
-                ];
-            }
-    
-            if($request->input('receive_applications') == 'Email-Address') {
-                $r_a = json_encode([
-                    'receive_application_type' => 'Email-Address',
-                    'email' => $request->input('email'),
-                ]);
-            } elseif($request->input('receive_applications') == 'Custom-URL') {
-                $r_a = json_encode([
-                    'receive_application_type' => 'Custom-URL',
-                    'apply_url' => $request->input('apply_url'),
-                ]);
-            } else {
-                $r_a = json_encode([
-                    'receive_application_type' => 'Current-Platform',
-                ]);
-            }
-    
-            $job = Job::create([
-                'company_id' => $request->input('company'),
-                'job_category_id' => $request->input('category'),
-                'job_role_id' => $request->input('job_role'),
-                'title' => $request->input('title'),
-                'vacancies' => $request->input('vacancies'),
-                'deadline' => $request->input('deadline'),
-                'salary_details' => json_encode($salaryDetails),
-                'salary_type' => $request->input('salary_type'),
-                'country' => $request->input('country'),
-                'location' => $request->input('location'),
-                'applicant' => $r_a,
-                'job_feature' => $request->input('jobfeature'),
-                'experience' => $request->input('experience'),
-                'education' => $request->input('education'),
-                'job_type' => $request->input('job_type'),
-                'description' => $request->input('bio'),
-            ]);   
-    
-            if (!empty($request->input('tags'))) {
-                $job->tags()->attach($request->input('tags'));
-            }
-    
-            if (!empty($request->input('benefit'))) {
-                $job->benefits()->attach($request->input('benefit'));
-            }
-    
+        $result=$this->jobService->store($request);        
+        if ($result){
             return to_route('admin.jobs.index')->with('success','Job has been successfully Added');
-        } catch (\Exception $e) {
-            return to_route('admin.jobs.index')->with('error','Something went wrong!');
-        }
+        } 
+        return to_route('admin.jobs.index')->with('error','Something went wrong!');
     }
 
     /**
@@ -180,67 +97,11 @@ class JobController extends Controller
      */
     public function update(CreateRequest $request, Job $job)
     {
-        try {
-            if ($request->input('salary_details') == 'salary_range') {
-                $salaryDetails = [
-                    'job_feature_type' => 'salary_range',
-                    'min_salary' => $request->input('min_salary_range'),
-                    'max_salary' => $request->input('max_salary_range'),
-                ];
-            } else {
-                $salaryDetails = [
-                    'job_feature_type' => 'custom_salary',
-                    'custom_salary' => $request->input('custom_salary'),
-                ];
-            }
-    
-            if($request->input('receive_applications') == 'Email-Address') {
-                $r_a = json_encode([
-                    'receive_application_type' => 'Email-Address',
-                    'email' => $request->input('email'),
-                ]);
-            } elseif($request->input('receive_applications') == 'Custom-URL') {
-                $r_a = json_encode([
-                    'receive_application_type' => 'Custom-URL',
-                    'apply_url' => $request->input('apply_url'),
-                ]);
-            } else {
-                $r_a = json_encode([
-                    'receive_application_type' => 'Current-Platform',
-                ]);
-            }
-    
-            $job->update([
-                'company_id' => $request->input('company'),
-                'job_category_id' => $request->input('category'),
-                'job_role_id' => $request->input('job_role'),
-                'title' => $request->input('title'),
-                'vacancies' => $request->input('vacancies'),
-                'deadline' => $request->input('deadline'),
-                'salary_details' => json_encode($salaryDetails),
-                'salary_type' => $request->input('salary_type'),
-                'country' => $request->input('country'),
-                'location' => $request->input('location'),
-                'applicant' => $r_a,
-                'job_feature' => $request->input('jobfeature'),
-                'experience' => $request->input('experience'),
-                'education' => $request->input('education'),
-                'job_type' => $request->input('job_type'),
-                'description' => $request->input('bio'),
-            ]);   
-    
-            if (!empty($request->input('tags'))) {
-                $job->tags()->sync($request->input('tags'));
-            }
-    
-            if (!empty($request->input('benefit'))) {
-                $job->benefits()->sync($request->input('benefit'));
-            }
-    
+        $result=$this->jobService->update($request,$job);        
+        if ($result){
             return to_route('admin.jobs.index')->with('success','Job has been successfully Updated');
-        } catch (\Exception $e) {
-            return to_route('admin.jobs.index')->with('error','Something went wrong!');
-        }
+        } 
+        return to_route('admin.jobs.index')->with('error','Something went wrong!');
     }
 
     /**
@@ -253,16 +114,10 @@ class JobController extends Controller
     }
 
     public function update_job_status(Job $job, $status) {
-        try {
-            if ($status == 'publish') 
-            $update_status = '1';
-            else 
-            $update_status = '0';
-
-            $job->update(['status'=>$update_status]);
+        $result=$this->jobService->status($job,$status);        
+        if ($result){
             return to_route('admin.jobs.index')->with('success','Job Status has been successfully Updated');
-        } catch (\Exception $e) {
-            return to_route('admin.jobs.index')->with('error','Something went wrong!');
-        }
+        } 
+        return to_route('admin.jobs.index')->with('error','Something went wrong!');
     }
 }
