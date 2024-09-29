@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Models\Job;
+use Illuminate\Support\Str;
 use App\Services\Interfaces\JobServiceInterface;
 
 class JobService implements JobServiceInterface
@@ -83,6 +84,7 @@ class JobService implements JobServiceInterface
                 'job_category_id' => $request->input('category'),
                 'job_role_id' => $request->input('job_role'),
                 'title' => $request->input('title'),
+                'slug' => Str::slug($request->input('title')).'_'.uniqid(true),
                 'vacancies' => $request->input('vacancies'),
                 'deadline' => $request->input('deadline'),
                 'salary_details' => json_encode($salaryDetails),
@@ -147,6 +149,7 @@ class JobService implements JobServiceInterface
                 'job_category_id' => $request->input('category'),
                 'job_role_id' => $request->input('job_role'),
                 'title' => $request->input('title'),
+                'slug' => Str::slug($request->input('title')).'_'.uniqid(true),
                 'vacancies' => $request->input('vacancies'),
                 'deadline' => $request->input('deadline'),
                 'salary_details' => json_encode($salaryDetails),
